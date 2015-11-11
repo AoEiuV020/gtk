@@ -1,0 +1,84 @@
+#***************************************************
+#	^> File Name: single.mk
+#	^> Author: AoEiuV020
+#	^> Mail: 490674483@qq.com
+#	^> Created Time: 2015/05/09
+#***************************************************
+#######自动编译当前文件夹下所有.cpp，生成.o和可执行文件，
+#######如果C=CC则编译.c,
+#######如果RELEASE=1则同时生成对应.a和.so,
+#######自动判断操作系统
+#ifeq ($(shell uname 2>&1),Linux)
+#	WINDOWS=0
+#else
+#	WINDOWS=1
+#endif
+	WINDOWS=0
+#######上面是判断系统是不是WINDOWS,准不准无所谓了，能用就好。。。
+ifeq ($(WINDOWS),1)
+	SHELL=cmd.exe
+	TAREXT=exe
+	RUN=
+	RM=del /f
+else
+	TAREXT=out
+	RUN=./
+	RM=rm -f
+endif
+#######上面是WINDOWS不一样的地方。。。
+n=hello.c
+SRCEXT:=$(suffix $(n))
+CC=gcc
+CXX=g++
+ifeq ($(SRCEXT),$(findstring $(SRCEXT),.c .i))
+	C=CC
+	FLAGS=CFLAGS
+else
+	C=CXX
+	FLAGS=CXXFLAGS
+endif
+#######这个C决定是c还是c++。。。
+
+GTK_CFLAGS=`pkg-config --cflags gtk+-3.0`
+GTK_LIBS=`pkg-config --libs gtk+-3.0`
+INCLUDES=-I.
+CFLAGS=-Wall -std=c99 -O2 -g $(INCLUDES) $(GTK_CFLAGS)
+CXXFLAGS=-Wall -std=c++11 -O2 -g $(INCLUDES) $(GTK_CFLAGS)
+TARGET=$(notdir $(CURDIR)).$(TAREXT)
+OBJS=$(patsubst %$(SRCEXT),%.o,$(n))
+LIBS=$(GTK_LIBS)
+LDFLAGS=$(LIBS) -L.
+
+
+
+
+ECHO=echo $@:$? done...
+
+
+.PHONY:all clean chname install
+
+
+all:$(TARGET)
+	$(RUN)$<
+	@$(ECHO)
+
+
+$(TARGET):$(OBJS)
+	$($(C)) $^ $(LDFLAGS) -o $@
+
+
+$(OBJS):%.o:%$(SRCEXT)
+	$($(C)) -c $^ $($(FLAGS)) -o $@
+
+
+clean:
+	-@$(RM) $(OBJS) $(TARGET)
+	@$(ECHO)
+
+chname:
+	sed -i "s/\<$(n)\>/$(N)/" makefile
+
+install:$(TARGET)
+	if [ ! -d exe ] ;then mkdir exe;fi
+	for i in `ldd $(TARGET)|grep -vi system32|grep mingw64|awk '{print $$1}'` ;do cp -u /mingw64/bin/$$i exe ;done
+	cp $(TARGET) exe
