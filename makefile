@@ -26,7 +26,7 @@ else
 	RM=rm -f
 endif
 #######上面是WINDOWS不一样的地方。。。
-n=hello.c
+n=builder.c
 SRCEXT:=$(suffix $(n))
 CC=gcc
 CXX=g++
@@ -39,8 +39,9 @@ else
 endif
 #######这个C决定是c还是c++。。。
 
-GTK_CFLAGS=`pkg-config --cflags gtk+-3.0`
-GTK_LIBS=`pkg-config --libs gtk+-3.0`
+GTK_VERSION=gtk+-3.0
+GTK_CFLAGS=`pkg-config --cflags $(GTK_VERSION)`
+GTK_LIBS=`pkg-config --libs $(GTK_VERSION)`
 INCLUDES=-I.
 CFLAGS=-Wall -std=c99 -O2 -g $(INCLUDES) $(GTK_CFLAGS)
 CXXFLAGS=-Wall -std=c++11 -O2 -g $(INCLUDES) $(GTK_CFLAGS)
