@@ -13,7 +13,7 @@
 #else
 #	WINDOWS=1
 #endif
-	WINDOWS=0
+WINDOWS=0
 #######上面是判断系统是不是WINDOWS,准不准无所谓了，能用就好。。。
 ifeq ($(WINDOWS),1)
 	SHELL=cmd.exe
@@ -26,7 +26,7 @@ else
 	RM=rm -f
 endif
 #######上面是WINDOWS不一样的地方。。。
-n=builder.c
+n=dialog.c
 SRCEXT:=$(suffix $(n))
 CC=gcc
 CXX=g++
